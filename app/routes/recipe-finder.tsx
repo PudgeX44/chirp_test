@@ -1,5 +1,5 @@
 import { ActionFunctionArgs } from "@remix-run/node";
-import { Form, Link, useActionData } from "@remix-run/react";
+import { Form, Link, useActionData, useNavigation } from "@remix-run/react";
 import axios from "axios";
 import { RecipeFinderResponseItem } from "~/types/recipe-finder.types";
 
@@ -20,6 +20,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function RecipeFinder() {
   const data = useActionData<RecipeFinderResponseItem[]>();
+  const { state } = useNavigation();
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen space-y-8">
@@ -57,41 +58,47 @@ export default function RecipeFinder() {
         </button>
       </Form>
 
-      <div className="space-y-6">
-        {data?.map((item) => (
-          <div
-            key={item.id}
-            className="bg-white p-6 rounded-lg shadow-md space-y-4"
-          >
-            <img
-              src={item.image}
-              alt={item.title}
-              className="w-full h-40 object-cover rounded-md"
-            />
-            <h2 className="text-xl font-semibold text-gray-800">
-              {item.title}
-            </h2>
-            <div>
-              <h4 className="text-lg font-medium text-gray-700">Ingredients</h4>
-              <p className="text-gray-600">
-                {item.usedIngredients
-                  .map((ingredient) => ingredient.name)
-                  .join(", ")}
-              </p>
+      {state === "submitting" ? (
+        <div className="flex items-center justify-center">Loading...</div>
+      ) : (
+        <div className="space-y-6">
+          {data?.map((item) => (
+            <div
+              key={item.id}
+              className="bg-white p-6 rounded-lg shadow-md space-y-4"
+            >
+              <img
+                src={item.image}
+                alt={item.title}
+                className="w-full h-40 object-cover rounded-md"
+              />
+              <h2 className="text-xl font-semibold text-gray-800">
+                {item.title}
+              </h2>
+              <div>
+                <h4 className="text-lg font-medium text-gray-700">
+                  Ingredients
+                </h4>
+                <p className="text-gray-600">
+                  {item.usedIngredients
+                    .map((ingredient) => ingredient.name)
+                    .join(", ")}
+                </p>
+              </div>
+              <div>
+                <h4 className="text-lg font-medium text-gray-700">
+                  Missing Ingredients
+                </h4>
+                <p className="text-gray-600">
+                  {item.missedIngredients
+                    .map((ingredient) => ingredient.name)
+                    .join(", ")}
+                </p>
+              </div>
             </div>
-            <div>
-              <h4 className="text-lg font-medium text-gray-700">
-                Missing Ingredients
-              </h4>
-              <p className="text-gray-600">
-                {item.missedIngredients
-                  .map((ingredient) => ingredient.name)
-                  .join(", ")}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

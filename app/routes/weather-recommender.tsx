@@ -1,5 +1,5 @@
 import { ActionFunctionArgs } from "@remix-run/node";
-import { Form, Link, useActionData } from "@remix-run/react";
+import { Form, Link, useActionData, useNavigation } from "@remix-run/react";
 import axios from "axios";
 import { ChangeEvent, useState } from "react";
 import {
@@ -42,6 +42,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function WeatherRecommender() {
   const data = useActionData<ActionDataResponse>();
+  const { state } = useNavigation();
   const [wardrobe, setWardrobe] = useState<WardrobeItem[]>([]);
   const [isAddingWardRobe, setIsAddingWardRobe] = useState(false);
   const [formValues, setFormValues] = useState({
@@ -127,40 +128,46 @@ export default function WeatherRecommender() {
         </button>
       </Form>
 
-      {data && (
-        <div className="space-y-6">
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h1 className="text-2xl font-semibold text-gray-800 mb-4">
-              Weather
-            </h1>
-            <h4 className="text-gray-700">
-              Temperature: {data?.weather.main.temp}
-            </h4>
-            <h4 className="text-gray-700">
-              Humidity: {data?.weather.main.humidity}
-            </h4>
-            <h4 className="text-gray-700">
-              Pressure: {data?.weather.main.pressure}
-            </h4>
-          </div>
+      {state === "submitting" ? (
+        <div className="flex items-center justify-center">Loading...</div>
+      ) : (
+        <>
+          {data && (
+            <div className="space-y-6">
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <h1 className="text-2xl font-semibold text-gray-800 mb-4">
+                  Weather
+                </h1>
+                <h4 className="text-gray-700">
+                  Temperature: {data?.weather.main.temp}
+                </h4>
+                <h4 className="text-gray-700">
+                  Humidity: {data?.weather.main.humidity}
+                </h4>
+                <h4 className="text-gray-700">
+                  Pressure: {data?.weather.main.pressure}
+                </h4>
+              </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h1 className="text-2xl font-semibold text-gray-800 mb-4">
-              Recommended Items
-            </h1>
-            <ul className="space-y-2">
-              {data.recommendedOutfits.map((item, index) => (
-                <li
-                  key={index}
-                  className="p-2 border rounded-lg bg-gray-50 text-gray-700"
-                >
-                  Type: {item.type}, Temperature: {item.temperatureRange},
-                  Formality: {item.formality}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <h1 className="text-2xl font-semibold text-gray-800 mb-4">
+                  Recommended Items
+                </h1>
+                <ul className="space-y-2">
+                  {data.recommendedOutfits.map((item, index) => (
+                    <li
+                      key={index}
+                      className="p-2 border rounded-lg bg-gray-50 text-gray-700"
+                    >
+                      Type: {item.type}, Temperature: {item.temperatureRange},
+                      Formality: {item.formality}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       <button

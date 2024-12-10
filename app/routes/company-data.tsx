@@ -1,5 +1,5 @@
 import { ActionFunctionArgs } from "@remix-run/node";
-import { Form, Link, useActionData } from "@remix-run/react";
+import { Form, Link, useActionData, useNavigation } from "@remix-run/react";
 import axios from "axios";
 import {
   ActionDataResponse,
@@ -41,6 +41,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function CompanyData() {
   const data = useActionData<ActionDataResponse>();
+  const { state } = useNavigation();
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
@@ -80,28 +81,34 @@ export default function CompanyData() {
         </button>
       </Form>
 
-      <div className="space-y-4">
-        {data?.companyData.map((data, index) => (
-          <Link
-            to={data.link}
-            key={index}
-            target="_blank"
-            rel="noreferrer"
-            className="block bg-white p-4 rounded-lg shadow-md hover:bg-gray-50 transition"
-          >
-            <h4 className="text-lg font-semibold text-gray-800">
-              {data.title}
+      {state === "submitting" ? (
+        <div className="flex items-center justify-center">Loading...</div>
+      ) : (
+        <>
+          <div className="mb-6">
+            <h4 className="text-xl font-semibold text-gray-800">
+              {data?.companySummary}
             </h4>
-            <p className="text-sm text-gray-600">{data.snippet}</p>
-          </Link>
-        ))}
-      </div>
+          </div>
 
-      <div className="mt-6">
-        <h4 className="text-xl font-semibold text-gray-800">
-          {data?.companySummary}
-        </h4>
-      </div>
+          <div className="space-y-4">
+            {data?.companyData.map((data, index) => (
+              <Link
+                to={data.link}
+                key={index}
+                target="_blank"
+                rel="noreferrer"
+                className="block bg-white p-4 rounded-lg shadow-md hover:bg-gray-50 transition"
+              >
+                <h4 className="text-lg font-semibold text-gray-800">
+                  {data.title}
+                </h4>
+                <p className="text-sm text-gray-600">{data.snippet}</p>
+              </Link>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }
