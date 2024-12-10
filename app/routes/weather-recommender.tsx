@@ -51,8 +51,8 @@ export default function WeatherRecommender() {
     formality: "formal",
   });
 
-  const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = e.target;
+  const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = event.target;
     setFormValues((prev) => ({ ...prev, [name]: value }));
   };
 

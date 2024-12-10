@@ -1,6 +1,8 @@
 import { ActionFunctionArgs } from "@remix-run/node";
 import { Form, Link, useActionData, useNavigation } from "@remix-run/react";
 import axios from "axios";
+import { ChangeEvent, useEffect, useState } from "react";
+import { aisleCategories } from "~/constants/constants";
 import { RecipeFinderResponseItem } from "~/types/recipe-finder.types";
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -21,6 +23,39 @@ export async function action({ request }: ActionFunctionArgs) {
 export default function RecipeFinder() {
   const data = useActionData<RecipeFinderResponseItem[]>();
   const { state } = useNavigation();
+  const [filter, setFilter] = useState("");
+  const [filteredData, setFilteredData] = useState<RecipeFinderResponseItem[]>(
+    data ?? []
+  );
+
+  const handleFilterChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const filterValue = event.target.value;
+    const filteredRecipes = data?.filter((item) => {
+      const isInMissingIngredients = item.missedIngredients.find(
+        (ingredient) => ingredient.aisle === filterValue
+      );
+      const isInUsedIngredients = item.usedIngredients.find(
+        (ingredient) => ingredient.aisle === filterValue
+      );
+      const isInUnUsedIngredients = item.unusedIngredients.find(
+        (ingredient) => ingredient.aisle === filterValue
+      );
+
+      return (
+        !isInMissingIngredients &&
+        !isInUnUsedIngredients &&
+        !isInUsedIngredients
+      );
+    });
+
+    setFilter(filterValue);
+    setFilteredData(filteredRecipes ?? []);
+  };
+
+  useEffect(() => {
+    setFilteredData(data ?? []);
+    setFilter("");
+  }, [data]);
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen space-y-8">
@@ -62,7 +97,30 @@ export default function RecipeFinder() {
         <div className="flex items-center justify-center">Loading...</div>
       ) : (
         <div className="space-y-6">
-          {data?.map((item) => (
+          {data && (
+            <div className="mb-4">
+              <label htmlFor="ingredient-filter" className="mr-2">
+                Filter Recipes:
+              </label>
+              <select
+                id="ingredient-filter"
+                value={filter}
+                onChange={handleFilterChange}
+                className="p-2 border rounded-md"
+              >
+                <option value="">
+                  Select a category to filter out recipes
+                </option>
+                {aisleCategories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {filteredData?.map((item) => (
             <div
               key={item.id}
               className="bg-white p-6 rounded-lg shadow-md space-y-4"
