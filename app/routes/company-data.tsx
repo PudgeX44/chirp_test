@@ -14,6 +14,7 @@ export async function action({ request }: ActionFunctionArgs) {
     `https://www.googleapis.com/customsearch/v1?q=${company}+news&key=${process.env.GOOGLE_SEARCH_API_KEY}&cx=${process.env.GOOGLE_SEARCH_ENGINE_ID}`
   );
 
+  // content to be sent to the gemini API conversation
   const dataForAI = response.data.items.map((item) => item.title).join(",");
   const postDataForAI = {
     contents: [

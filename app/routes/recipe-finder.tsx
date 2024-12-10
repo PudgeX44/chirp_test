@@ -3,7 +3,10 @@ import { Form, Link, useActionData, useNavigation } from "@remix-run/react";
 import axios from "axios";
 import { ChangeEvent, useEffect, useState } from "react";
 import { aisleCategories } from "~/constants/constants";
-import { RecipeFinderResponseItem } from "~/types/recipe-finder.types";
+import {
+  Ingredient,
+  RecipeFinderResponseItem,
+} from "~/types/recipe-finder.types";
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -31,20 +34,13 @@ export default function RecipeFinder() {
   const handleFilterChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const filterValue = event.target.value;
     const filteredRecipes = data?.filter((item) => {
-      const isInMissingIngredients = item.missedIngredients.find(
-        (ingredient) => ingredient.aisle === filterValue
-      );
-      const isInUsedIngredients = item.usedIngredients.find(
-        (ingredient) => ingredient.aisle === filterValue
-      );
-      const isInUnUsedIngredients = item.unusedIngredients.find(
-        (ingredient) => ingredient.aisle === filterValue
-      );
+      const ingredientAisleExists = (ingredients: Ingredient[]) =>
+        ingredients.some((ingredient) => ingredient.aisle === filterValue);
 
       return (
-        !isInMissingIngredients &&
-        !isInUnUsedIngredients &&
-        !isInUsedIngredients
+        !ingredientAisleExists(item.missedIngredients) &&
+        !ingredientAisleExists(item.unusedIngredients) &&
+        !ingredientAisleExists(item.usedIngredients)
       );
     });
 

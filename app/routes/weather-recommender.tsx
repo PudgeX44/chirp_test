@@ -24,6 +24,12 @@ export async function action({ request }: ActionFunctionArgs) {
       .split("-")
       .map((range) => Number(range));
 
+    // If location temp is greater than 30 check if temperature range is equal to 30+
+    if (response.data.main.temp > 30 && item.temperatureRange === "30+") {
+      return true;
+    }
+
+    // Else check if it is within the range of the item's temperature range
     if (
       response.data.main.temp > tempRange[0] &&
       response.data.main.temp < tempRange[1]
