@@ -17,7 +17,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   // Sort the data by the most number of available ingredients
   const sortedResponse = response.data.sort(
-    (a, b) => a.usedIngredientCount - b.usedIngredientCount
+    (a, b) => b.usedIngredientCount - a.usedIngredientCount
   );
 
   return sortedResponse;
