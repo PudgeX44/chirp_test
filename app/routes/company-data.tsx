@@ -93,6 +93,8 @@ export default function CompanyData() {
           </div>
 
           <div className="space-y-4">
+            {data && <h2 className="text-xl">Related Links</h2>}
+
             {data?.companyData.map((data, index) => (
               <Link
                 to={data.link}

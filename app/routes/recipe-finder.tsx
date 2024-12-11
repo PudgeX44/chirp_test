@@ -94,7 +94,7 @@ export default function RecipeFinder() {
       ) : (
         <div className="space-y-6">
           {data && (
-            <div className="mb-4">
+            <div className="mb-4 flex flex-col sm:block gap-2">
               <label htmlFor="ingredient-filter" className="mr-2">
                 Filter Recipes:
               </label>
@@ -104,9 +104,7 @@ export default function RecipeFinder() {
                 onChange={handleFilterChange}
                 className="p-2 border rounded-md"
               >
-                <option value="">
-                  Select a category to filter out recipes
-                </option>
+                <option value="">Select a category</option>
                 {aisleCategories.map((category) => (
                   <option key={category} value={category}>
                     {category}
@@ -116,41 +114,43 @@ export default function RecipeFinder() {
             </div>
           )}
 
-          {filteredData?.map((item) => (
-            <div
-              key={item.id}
-              className="bg-white p-6 rounded-lg shadow-md space-y-4"
-            >
-              <img
-                src={item.image}
-                alt={item.title}
-                className="w-full h-40 object-cover rounded-md"
-              />
-              <h2 className="text-xl font-semibold text-gray-800">
-                {item.title}
-              </h2>
-              <div>
-                <h4 className="text-lg font-medium text-gray-700">
-                  Ingredients
-                </h4>
-                <p className="text-gray-600">
-                  {item.usedIngredients
-                    .map((ingredient) => ingredient.name)
-                    .join(", ")}
-                </p>
+          <div className="grid sm:grid-cols-2 md:grid-cols-3">
+            {filteredData?.map((item) => (
+              <div
+                key={item.id}
+                className="bg-white p-6 m-2 rounded-lg shadow-md space-y-4"
+              >
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="w-full h-40 object-cover rounded-md"
+                />
+                <h2 className="text-xl font-semibold text-gray-800">
+                  {item.title}
+                </h2>
+                <div>
+                  <h4 className="text-lg font-medium text-gray-700">
+                    Ingredients
+                  </h4>
+                  <p className="text-gray-600">
+                    {item.usedIngredients
+                      .map((ingredient) => ingredient.name)
+                      .join(", ")}
+                  </p>
+                </div>
+                <div>
+                  <h4 className="text-lg font-medium text-gray-700">
+                    Missing Ingredients
+                  </h4>
+                  <p className="text-gray-600">
+                    {item.missedIngredients
+                      .map((ingredient) => ingredient.name)
+                      .join(", ")}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h4 className="text-lg font-medium text-gray-700">
-                  Missing Ingredients
-                </h4>
-                <p className="text-gray-600">
-                  {item.missedIngredients
-                    .map((ingredient) => ingredient.name)
-                    .join(", ")}
-                </p>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
     </div>
